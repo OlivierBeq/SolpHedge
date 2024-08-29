@@ -1,15 +1,26 @@
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-![Windows](https://img.shields.io/badge/Windows-0078D6?style=for-the-badge&logo=windows&logoColor=white) ![Linux](https://img.shields.io/badge/Linux-FCC624?style=for-the-badge&logo=linux&logoColor=black)  
 
 # <sup>:notes:</sup>:saxophone: Sol*pH*<sup>edge</sup>
 
 pH-dependent solubility predictions for small molecules
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+## Use in the browser
+
+Try it without any local installation by clicking the badge below!
+
+⏬⏬⏬⏬⏬⏬<br/>
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://githubtocolab.com/OlivierBeq/SolpHedge/blob/master/solph_notebook.ipynb)
+<br/>⏫⏫⏫⏫⏫⏫
+
 
 ## Installation
 
+
 :warning: MacOS is not supported by SolpH<sup>edge</sup>. :warning:
+
+![Windows](https://img.shields.io/badge/Windows-0078D6?style=for-the-badge&logo=windows&logoColor=white) ![Linux](https://img.shields.io/badge/Linux-FCC624?style=for-the-badge&logo=linux&logoColor=black)  
 
 OpenBabel is the only dependency of SolpH<sup>edge</sup> not available through PyPI. It can be installed with:
 
