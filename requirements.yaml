@@ -1,0 +1,27 @@
+name: solphedge_training
+channels:
+  - conda-forge
+  - defaults
+  - pytorch
+  - nvidia
+dependencies:
+  - openbabel>=3.1.1
+  - python>=3.11.8
+  - pip
+  - pytorch
+  - pytorch-cuda=12.4
+  - pip:
+      - bluedesc-pywrapper>=0.0.5.post1
+      - cdk-pywrapper>=0.1.0
+      - chemopy2>=1.0.5
+      - ml2json>=0.4.0
+      - mold2-pywrapper>=0.1.0
+      - padel-pywrapper>=1.0.5
+      - pandas
+      - pyarrow
+      - pystow
+      - rdkit>=2024.3.1
+      - scikit-learn
+      - scipy
+      - tqdm
+      - papyrus_structure_pipeline>=0.0.5
