@@ -8,9 +8,9 @@ import pickle
 import sys
 import warnings
 
-import ml2json
 import numpy as np
 import pandas as pd
+from sklearn.preprocessing import StandardScaler, MaxAbsScaler
 from BlueDesc_pywrapper import BlueDesc
 from CDK_pywrapper import CDK
 from Mold2_pywrapper import Mold2
@@ -21,7 +21,7 @@ from papyrus_structure_pipeline import standardize as psp_standardize
 from rdkit import Chem
 
 
-# Filter out warnings of ml2json about scikit-learn's version when loading the scalers
+# Filter out NumPy warnings about scikit-learn's version when loading the scalers
 warnings.filterwarnings(action='ignore', category=UserWarning)
 warnings.filterwarnings(action='ignore', category=FutureWarning)
 
@@ -90,8 +90,7 @@ class SolpH:
         self.njobs = njobs
         # Instantiate models
         #       1) deltaLogS
-        self._deltaLogS_scaler = ml2json.from_json(self._modelfiles['deltaLogS']['scaler'])
-        self._deltaLogS_scaler.feature_names_in_ = self._deltaLogS_scaler.feature_names_in_.ravel().tolist()
+        self._deltaLogS_scaler = _load_sklearn_maxabs_scaler(self._modelfiles['deltaLogS']['scaler'])
         with open(self._modelfiles['deltaLogS']['novariance']) as fh:
             self._deltaLogS_novar_features = json.load(fh)
         self._deltaLogS_model = NumPyMLPRegressor(self._modelfiles['deltaLogS']['model'])
@@ -99,8 +98,7 @@ class SolpH:
         if self._deltaLogS_scaler.n_features_in_ - len(self._deltaLogS_novar_features) != deltaLogS_n_inputs:
             raise ValueError('Model files for deltaLogS do not match one another. Contact the maintainer.')
         #       2) negLogS
-        self._negLogS_scaler = ml2json.from_json(self._modelfiles['negLogS_ph7.4']['scaler'])
-        self._negLogS_scaler.feature_names_in_ = self._negLogS_scaler.feature_names_in_.ravel().tolist()
+        self._negLogS_scaler = _load_sklearn_standard_scaler(self._modelfiles['negLogS_ph7.4']['scaler'])
         with open(self._modelfiles['negLogS_ph7.4']['novariance']) as fh:
             self._negLogS_novar_features = json.load(fh)
         self._negLogS_model = NumPyMLPRegressor(self._modelfiles['negLogS_ph7.4']['model'])
@@ -192,3 +190,46 @@ class SolpH:
         preds[f'solubility (pH=1.0; {out_units})'] = 10 ** -(preds['composite -logS (pH=1.0)'] + allowed_units[out_units])
         # Round the data
         return preds.round(round)
+
+
+def _load_sklearn_standard_scaler(fpath: str) -> StandardScaler:
+    with open(fpath, 'r') as model_json:
+        model_dict = json.load(model_json)
+    model = StandardScaler(**model_dict['params'])
+    model.n_features_in_ = model_dict['n_features_in_']
+    if isinstance(model_dict['mean_'], list):
+        model.mean_ = np.array(model_dict['mean_'])
+    else:
+        model.mean_ = model_dict['mean_']
+    if isinstance(model_dict['var_'], list):
+        model.var_ = np.array(model_dict['var_'])
+    else:
+        model.var_ = model_dict['var_']
+    if isinstance(model_dict['scale_'], list):
+        model.scale_ = np.array(model_dict['scale_'])
+    else:
+        model.scale_ = model_dict['scale_']
+    if isinstance(model_dict['n_samples_seen_'], list):
+        model.n_samples_seen_ = np.array(model_dict['n_samples_seen_'])
+    else:
+        model.n_samples_seen_ = model_dict['n_samples_seen_']
+    if 'feature_names_in_' in model_dict.keys():
+        model.feature_names_in_ = model_dict['feature_names_in_'][0]
+    return model
+
+
+def _load_sklearn_maxabs_scaler(fpath: str) -> StandardScaler:
+    with open(fpath, 'r') as model_json:
+        model_dict = json.load(model_json)
+    model = MaxAbsScaler(**model_dict['params'])
+    if 'n_features_in_' in model_dict.keys():
+        model.n_features_in_ = model_dict['n_features_in_']
+    if 'feature_names_in_' in model_dict.keys():
+        model.feature_names_in_ = model_dict['feature_names_in_'][0]
+    if 'n_samples_seen_' in model_dict.keys():
+        model.n_samples_seen_ = model_dict['n_samples_seen_']
+    if 'max_abs_' in model_dict.keys():
+        model.max_abs_ = np.array(model_dict['max_abs_'])
+    if 'scale_' in model_dict.keys():
+        model.scale_ = np.array(model_dict['scale_'])
+    return model
