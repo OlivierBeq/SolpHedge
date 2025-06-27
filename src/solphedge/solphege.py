@@ -4,6 +4,7 @@
 
 import json
 import os
+import logging
 import pickle
 import sys
 import warnings
@@ -19,6 +20,13 @@ from chembl_structure_pipeline import standardize_mol as csp_standardize
 from chemopy import ChemoPy
 from papyrus_structure_pipeline import standardize as psp_standardize
 from rdkit import Chem
+from rdkit import rdBase
+
+
+# Set the log level for the default log handler to ignore INFO
+rdBase.LogToPythonLogger()
+logger = logging.getLogger('rdkit')
+logger.handlers[0].setLevel(logging.WARN)
 
 
 # Filter out NumPy warnings about scikit-learn's version when loading the scalers
@@ -134,6 +142,7 @@ class SolpH:
             smiles = [Chem.MolToSmiles(x) for x in mols]
         # Standardize if need be:
         if self.standardize:
+
             if self.standardizer == 'papyrus':
                 mols = [psp_standardize(mol, raise_error=False,
                                         filter_non_small_molecule=False,
