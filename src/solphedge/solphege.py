@@ -91,6 +91,7 @@ class SolpH:
         # Instantiate models
         #       1) deltaLogS
         self._deltaLogS_scaler = ml2json.from_json(self._modelfiles['deltaLogS']['scaler'])
+        self._deltaLogS_scaler.feature_names_in_ = self._deltaLogS_scaler.feature_names_in_.ravel().tolist()
         with open(self._modelfiles['deltaLogS']['novariance']) as fh:
             self._deltaLogS_novar_features = json.load(fh)
         self._deltaLogS_model = NumPyMLPRegressor(self._modelfiles['deltaLogS']['model'])
@@ -99,6 +100,7 @@ class SolpH:
             raise ValueError('Model files for deltaLogS do not match one another. Contact the maintainer.')
         #       2) negLogS
         self._negLogS_scaler = ml2json.from_json(self._modelfiles['negLogS_ph7.4']['scaler'])
+        self._negLogS_scaler.feature_names_in_ = self._negLogS_scaler.feature_names_in_.ravel().tolist()
         with open(self._modelfiles['negLogS_ph7.4']['novariance']) as fh:
             self._negLogS_novar_features = json.load(fh)
         self._negLogS_model = NumPyMLPRegressor(self._modelfiles['negLogS_ph7.4']['model'])
@@ -178,8 +180,8 @@ class SolpH:
         negSol = self._negLogS_model.predict(negLogS_data.values)
         deltaSol = self._deltaLogS_model.predict(deltaLogS_data.values)
         # Insert missing values where needed
-        negSol = np.insert(negSol, none_idx, np.NaN, axis=0).ravel()
-        deltaSol = np.insert(deltaSol, none_idx, np.NaN, axis=0).ravel()
+        negSol = np.insert(negSol, none_idx, np.nan, axis=0).ravel()
+        deltaSol = np.insert(deltaSol, none_idx, np.nan, axis=0).ravel()
         # Combine predictions
         preds = pd.concat([pd.Series(smiles, name='molecule'),
                            pd.Series(negSol, name='-logS (pH=7.4)'),
