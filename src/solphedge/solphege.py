@@ -59,8 +59,9 @@ class NumPyMLPRegressor:
             x = np.dot(x, self.weights[f'fc{i}.weight'].T)
             # Bias
             x += self.weights[f'fc{i}.bias']
-            # ReLU
-            x = (abs(x) + x) / 2
+            if i < 4:
+                # ReLU
+                x = (abs(x) + x) / 2
         return x
 
 
