@@ -4,4 +4,4 @@
 
 from .solphege import SolpH
 
-__version__ = "0.0.4.post2"
+__version__ = "0.0.4.post3"

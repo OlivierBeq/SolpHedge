@@ -11,22 +11,23 @@ import warnings
 
 import numpy as np
 import pandas as pd
+from rdkit import Chem
+from rdkit import rdBase
 from sklearn.preprocessing import StandardScaler, MaxAbsScaler
 from BlueDesc_pywrapper import BlueDesc
 from CDK_pywrapper import CDK
 from Mold2_pywrapper import Mold2
 from PaDEL_pywrapper import PaDEL, descriptors as PaDEL_descriptors
-from chembl_structure_pipeline import standardize_mol as csp_standardize
 from chemopy import ChemoPy
-from papyrus_structure_pipeline import standardize as psp_standardize
-from rdkit import Chem
-from rdkit import rdBase
 
 
 # Set the log level for the default log handler to ignore INFO
 rdBase.LogToPythonLogger()
 logger = logging.getLogger('rdkit')
 logger.handlers[0].setLevel(logging.WARN)
+
+from chembl_structure_pipeline import standardize_mol as csp_standardize
+from papyrus_structure_pipeline import standardize as psp_standardize
 
 
 # Filter out NumPy warnings about scikit-learn's version when loading the scalers
